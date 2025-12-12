@@ -315,6 +315,7 @@ out/lapua_2024/
 ├── Lapua-Tilinpaatos-2024.tables.json
 ├── Lapua-Tilinpaatos-2024.validation.json
 └── work/                        # Väliaikaistiedostot
+    ├── progress.json            # Checkpoint / etenemisen seuranta ajon aikana
     ├── extracted_tables/        # Griddatut taulukkoalueet (PNG)
     └── page_images/             # Renderöidyt sivut (PNG)
 ```
