@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdf2md-lapua"
+version = "0.1.0"
+description = "PDF to Markdown parser with Docling and Marker fallback"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "PDF Parser Team"}
+]
+dependencies = [
+    "docling[pdf,vision]>=2.0.0",
+    "pillow>=10.0.0",
+    "marker-pdf>=1.0.0",
+    "click>=8.1.0",
+    "pdfplumber>=0.10.0",
+    "pymupdf>=1.24.0",
+    "pdf2image>=1.16.0",
+    "opencv-python-headless>=4.8.0",
+    "paddleocr==3.3.2",
+    "paddlex[ocr]==3.3.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "mypy>=1.8.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+parse-pdf = "src.cli:main"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
