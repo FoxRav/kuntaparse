@@ -34,7 +34,7 @@ Uses PyMuPDF prepass + MinerU/Docling/pdfplumber + post-processing.
 ### Virtual environment
 
 ```powershell
-cd F:\-DEV-\PDF_Parser
+cd <repo_root>
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -45,7 +45,8 @@ pip install -r requirements.txt
 Make sure Poppler `bin` is in PATH (see `INSTALL_POPPLER.md`):
 
 ```powershell
-$env:Path += ";C:\poppler\poppler-24.08.0\Library\bin"
+# Example (adjust to your installation):
+$env:Path += ";C:\poppler\Library\bin"
 ```
 
 ### Recommended environment variables (Windows)

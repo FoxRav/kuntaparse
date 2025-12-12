@@ -56,19 +56,20 @@ pip install -r requirements.txt
 `pdf2image` tarvitsee Popplerin. Katso `INSTALL_POPPLER.md` ja varmista että Popplerin `bin` on PATH:ssa, esim:
 
 ```powershell
-$env:Path += ";C:\poppler\poppler-24.08.0\Library\bin"
+# Example (adjust to your installation):
+$env:Path += ";C:\poppler\Library\bin"
 ```
 
 ## GPU (suositus, jos mahdollista)
 
-Teillä on RTX 4050 6GB, joten GPU on järkevä erityisesti `--comprehensive` / PP-Structure -ajossa.
+Jos koneessa on NVIDIA-GPU ja käytössä on Paddle CUDA-build, GPU on järkevä erityisesti `--comprehensive` / PP-Structure -ajossa.
 
 - Tarkista ensin:
   - `nvidia-smi`
   - `python -c "import paddle; print(paddle.is_compiled_with_cuda(), paddle.get_device())"`
 
 Jos `paddle.is_compiled_with_cuda()` on `False`, teillä on CPU-build ja PP-Structure käyttää CPU:ta vaikka GPU löytyisi.
-Asenna silloin Paddle GPU -wheel, joka sopii teidän CUDA-ajuriin (Driver näyttää CUDA 12.9).
+Asenna silloin Paddle GPU -wheel, joka sopii teidän CUDA-ajuriin.
 
 Huom: Paddle GPU wheelin tarkka asennuskomento riippuu Paddle:n julkaisemista Windows wheel-versioista (CUDA 12.x). Jos haluat, haen teille täsmäkomennon suoraan Paddle:n virallisesta asennusohjeesta ja lukitsen sen `requirements.txt` / `pyproject.toml` -tasolle.
 
@@ -143,14 +144,15 @@ Tätä varten projekti sisältää koordinaatti-/OCR-token -pohjaisen “3 sarak
 Suositus: käytä aina `--comprehensive`, jotta kaikki PDF:t käyvät saman polun läpi.
 
 ```powershell
-cd F:\-DEV-\PDF_Parser
-$env:Path += ";C:\poppler\poppler-24.08.0\Library\bin"
+cd <repo_root>
+# Example (adjust to your installation):
+$env:Path += ";C:\poppler\Library\bin"
 $env:DISABLE_MODEL_SOURCE_CHECK="True"
 $env:PYTHONIOENCODING="utf-8"
 
-.\.venv\Scripts\python.exe -m src.cli data\Lapua-Tilinpaatos-2024.pdf -o out\lapua_2024 --comprehensive
-.\.venv\Scripts\python.exe -m src.cli data\Kauhava-Tilinpaatos-2024.pdf -o out\kauhava_2024 --comprehensive
-.\.venv\Scripts\python.exe -m src.cli data\Seinäjoki-Tilinpaatos-2024.pdf -o out\seinajoki_2024 --comprehensive
+.\.venv\Scripts\python.exe -m src.cli data\city_a.pdf -o out\city_a_2024 --comprehensive
+.\.venv\Scripts\python.exe -m src.cli data\city_b.pdf -o out\city_b_2024 --comprehensive
+.\.venv\Scripts\python.exe -m src.cli data\city_c.pdf -o out\city_c_2024 --comprehensive
 ```
 
 Jos haluat debugata yksittäistä ongelmasivua:
@@ -161,6 +163,7 @@ Jos haluat debugata yksittäistä ongelmasivua:
 Kertatarkistus:
 
 ```powershell
+$pwd | Out-Null  # run in repo root
 $pages=(Get-ChildItem out\lapua_2024\work\page_images\*.png -ErrorAction SilentlyContinue).Count
 $grids=(Get-ChildItem out\lapua_2024\work\extracted_tables\*grid.png -ErrorAction SilentlyContinue).Count
 $json='out\lapua_2024\Lapua-Tilinpaatos-2024.tables.json'

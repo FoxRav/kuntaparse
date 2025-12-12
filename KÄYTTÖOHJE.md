@@ -7,7 +7,7 @@ Tämä ohje kertoo miten prosessoit **yksittäisen PDF:n** (tai useita) omatoimi
 #### 1.1 Virtuaaliympäristö
 
 ```powershell
-cd F:\-DEV-\PDF_Parser
+cd <repo_root>
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -18,7 +18,8 @@ pip install -r requirements.txt
 `pdf2image` tarvitsee Popplerin. Varmista että Popplerin `bin` on PATH:ssa:
 
 ```powershell
-$env:Path += ";C:\poppler\poppler-24.08.0\Library\bin"
+# Example (adjust to your installation):
+$env:Path += ";C:\poppler\Library\bin"
 ```
 
 #### 1.3 Suositellut env-muuttujat (Paddle/Windows)
@@ -39,8 +40,8 @@ Tämä tuottaa **yhdestä tiedostosta** luettavan lopputuloksen:
 - validointi + low-confidence -raportti
 
 ```powershell
-cd F:\-DEV-\PDF_Parser
-.\.venv\Scripts\python.exe -m src.cli data\Lapua-Tilinpaatos-2024.pdf -o out\lapua_2024 --comprehensive
+cd <repo_root>
+.\.venv\Scripts\python.exe -m src.cli data\input.pdf -o out\run_name --comprehensive
 ```
 
 ### 3) Debug: aja vain yksi sivu (nopea savutesti)
@@ -48,20 +49,20 @@ cd F:\-DEV-\PDF_Parser
 Kun haluat testata vain yhden PDF-sivun (1-indexed):
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.cli data\Lapua-Tilinpaatos-2024.pdf -o out\_smoke_p151 --comprehensive --comprehensive-start-page 151 --comprehensive-max-pages 1
+.\.venv\Scripts\python.exe -m src.cli data\input.pdf -o out\smoke --comprehensive --comprehensive-start-page 151 --comprehensive-max-pages 1
 ```
 
-Huom: tulostettu sivunumero ≠ PDF-sivu. Lapua-esimerkissä tulostettu sivu 150 = PDF-sivu 151.
+Huom: tulostettu sivunumero ≠ PDF-sivu. CLI odottaa PDF-sivunumeron (1-indexed).
 
 ### 4) Outputit (mitä syntyy)
 
 Kun ajo on valmis, `out/<run>/` sisältää:
 - `<pdf_nimi>.md`  
-  Esim: `out/lapua_2024/Lapua-Tilinpaatos-2024.md`
+  Esim: `out/run_name/input.md`
 - `<pdf_nimi>.tables.json`  
-  Esim: `out/lapua_2024/Lapua-Tilinpaatos-2024.tables.json`
+  Esim: `out/run_name/input.tables.json`
 - `<pdf_nimi>.validation.json`  
-  Esim: `out/lapua_2024/Lapua-Tilinpaatos-2024.validation.json`
+  Esim: `out/run_name/input.validation.json`
 - `work/` välituotokset:
   - `work/page_images/page_0001.png ...` (renderöidyt sivut)
   - `work/extracted_tables/*grid.png` (griddatut taulukkoalueet)
@@ -94,27 +95,27 @@ Comprehensive-moodissa järjestys on:
 Renderöinti:
 
 ```powershell
-$pages=(Get-ChildItem out\lapua_2024\work\page_images\*.png -ErrorAction SilentlyContinue).Count
+$pages=(Get-ChildItem out\run_name\work\page_images\*.png -ErrorAction SilentlyContinue).Count
 "rendered_pages=$pages"
 ```
 
 Taulukkovaihe (grid-kuvat kasvavat):
 
 ```powershell
-$lastGrid=(Get-ChildItem out\lapua_2024\work\extracted_tables\*grid.png -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
+$lastGrid=(Get-ChildItem out\run_name\work\extracted_tables\*grid.png -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1)
 "last_grid=$($lastGrid.Name) @ $($lastGrid.LastWriteTime)"
 ```
 
 Checkpoint:
 
 ```powershell
-Get-Content out\lapua_2024\work\progress.json
+Get-Content out\run_name\work\progress.json
 ```
 
 ### 7) Nopea “onnistuiko vai ei” -tarkistus (sekunteja, ei OCR:ää)
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.quick_check out\lapua_2024
+.\.venv\Scripts\python.exe -m src.quick_check out\run_name
 ```
 
 Tämä tarkistaa mm.:
@@ -126,9 +127,9 @@ Tämä tarkistaa mm.:
 ### 8) Usean kaupungin ajaminen samalla prosessilla (vertailukelpoisuus)
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.cli data\Lapua-Tilinpaatos-2024.pdf -o out\lapua_2024 --comprehensive
-.\.venv\Scripts\python.exe -m src.cli data\Kauhava-Tilinpaatos-2024.pdf -o out\kauhava_2024 --comprehensive
-.\.venv\Scripts\python.exe -m src.cli data\Seinäjoki-Tilinpaatos-2024.pdf -o out\seinajoki_2024 --comprehensive
+.\.venv\Scripts\python.exe -m src.cli data\city_a.pdf -o out\city_a_2024 --comprehensive
+.\.venv\Scripts\python.exe -m src.cli data\city_b.pdf -o out\city_b_2024 --comprehensive
+.\.venv\Scripts\python.exe -m src.cli data\city_c.pdf -o out\city_c_2024 --comprehensive
 ```
 
 ### 9) Jos ajo jää kesken
@@ -142,8 +143,8 @@ Toimi näin:
 3. käynnistä sama komento uudestaan
 
 ```powershell
-Remove-Item -Force out\lapua_2024\.pdf_parser_run.lock -ErrorAction SilentlyContinue
-.\.venv\Scripts\python.exe -m src.cli data\Lapua-Tilinpaatos-2024.pdf -o out\lapua_2024 --comprehensive
+Remove-Item -Force out\run_name\.pdf_parser_run.lock -ErrorAction SilentlyContinue
+.\.venv\Scripts\python.exe -m src.cli data\input.pdf -o out\run_name --comprehensive
 ```
 
 
