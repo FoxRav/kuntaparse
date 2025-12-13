@@ -48,8 +48,8 @@ dmypy.json
 out/*
 !out/.gitkeep
 
-# Input data (PDFs should not be committed to GitHub)
-data/*.pdf
+# Input data - PDFs are included as examples
+# data/*.pdf
 !data/.gitkeep
 
 # OS
